@@ -94,7 +94,11 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: artifacts/*
+          files: |
+            artifacts/tetris-windows-x64/tetris-windows-x64.zip
+            artifacts/tetris-linux-x64/tetris-linux-x64.tar.gz
+            artifacts/tetris-macos-x64/tetris-macos-x64.tar.gz
+            artifacts/checksums.txt
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
