@@ -1,0 +1,100 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: tetris-windows-x64
+            ext: .exe
+          - os: ubuntu-latest
+            artifact_name: tetris-linux-x64
+            ext: ''
+          - os: macos-latest
+            artifact_name: tetris-macos-x64
+            ext: ''
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pygame
+          pip install pyinstaller
+
+      - name: Install dependencies (Windows/macOS)
+        if: matrix.os != 'ubuntu-latest'
+        run: |
+          pip install pygame pyinstaller
+
+      - name: Build on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          pyinstaller --onefile --name tetris tetris/main.py
+          Compress-Archive -Path dist/tetris.exe -DestinationPath tetris-windows-x64.zip
+
+      - name: Build on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          pyinstaller --onefile --name tetris tetris/main.py
+          tar -czvf tetris-linux-x64.tar.gz dist/tetris
+
+      - name: Build on macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          pyinstaller --onefile --name tetris tetris/main.py
+          tar -czvf tetris-macos-x64.tar.gz dist/tetris.app
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: |
+            ${{ matrix.artifact_name }}.*
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create checksums
+        run: |
+          cd artifacts
+          sha256sum * > checksums.txt
+          cat checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
