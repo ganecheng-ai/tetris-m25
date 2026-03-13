@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "pyinstaller>=5.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tetris-m25"
+version = "0.1.0"
+description = "俄罗斯方块游戏 - Tetris M25"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "ganecheng-ai", email = "ganecheng@ai.com"}
+]
+dependencies = [
+    "pygame>=2.0.0",
+]
+
+[project.scripts]
+tetris = "tetris.main:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
