@@ -1,2 +1,2 @@
 """Tetris M25 - 俄罗斯方块游戏"""
-__version__ = "0.1.4"
+from tetris.__about__ import __version__

@@ -2,7 +2,6 @@
 import logging
 import os
 import sys
-from datetime import datetime
 
 
 def setup_logger(name: str = "tetris") -> logging.Logger:
@@ -15,10 +14,14 @@ def setup_logger(name: str = "tetris") -> logging.Logger:
 
     logger.setLevel(logging.DEBUG)
 
-    # 获取日志文件路径（程序运行目录）
-    log_dir = os.path.dirname(os.path.abspath(sys.argv[0])) or "."
-    if not log_dir:
-        log_dir = "."
+    # 获取日志文件路径
+    # 优先使用当前工作目录（用户执行命令的目录），确保日志保存在程序运行目录
+    log_dir = os.getcwd() or "."
+
+    # 如果是通过pyinstaller打包的可执行文件，使用其所在目录
+    if getattr(sys, 'frozen', False):
+        log_dir = os.path.dirname(sys.executable)
+
     log_file = os.path.join(log_dir, "tetris.log")
 
     # 文件处理器 - 记录DEBUG级别
