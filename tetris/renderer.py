@@ -71,9 +71,10 @@ class Renderer:
         # 绘制侧边栏
         self._draw_sidebar(game)
 
-        # 绘制当前方块
+        # 绘制当前方块（包括幽灵方块）
         if game.current_piece and not game.game_over:
-            self._draw_piece(game.current_piece)
+            ghost_y = game.get_ghost_y()
+            self._draw_piece(game.current_piece, ghost_y)
 
         # 绘制暂停遮罩
         if game.paused:
@@ -124,10 +125,21 @@ class Renderer:
                         game.board[y][x]
                     )
 
-    def _draw_piece(self, piece: Tetromino) -> None:
+    def _draw_piece(self, piece: Tetromino, ghost_y: int = None) -> None:
         """绘制当前方块"""
         board_x = 20
         board_y = 50
+
+        # 先绘制幽灵方块（如果提供）
+        if ghost_y is not None and ghost_y != piece.y:
+            ghost_blocks = piece.get_blocks()
+            ghost_y_offset = ghost_y - piece.y
+            for bx, by in ghost_blocks:
+                if by >= 0:
+                    gx = board_x + bx * self.BLOCK_SIZE
+                    gy = board_y + (by + ghost_y_offset) * self.BLOCK_SIZE
+                    # 绘制半透明的幽灵方块
+                    self._draw_block(gx, gy, piece.color, alpha=60)
 
         blocks = piece.get_blocks()
         for bx, by in blocks:
@@ -138,8 +150,15 @@ class Renderer:
                     piece.color
                 )
 
-    def _draw_block(self, x: int, y: int, color: Tuple[int, int, int]) -> None:
+    def _draw_block(self, x: int, y: int, color: Tuple[int, int, int], alpha: int = 255) -> None:
         """绘制单个方块"""
+        # 如果需要透明度，创建一个支持alpha的表面
+        if alpha < 255:
+            block_surface = pygame.Surface((self.BLOCK_SIZE - 2, self.BLOCK_SIZE - 2), pygame.SRCALPHA)
+            block_surface.fill((*color, alpha))
+            self.screen.blit(block_surface, (x + 1, y + 1))
+            return
+
         # 主体
         rect = pygame.Rect(x + 1, y + 1, self.BLOCK_SIZE - 2, self.BLOCK_SIZE - 2)
         pygame.draw.rect(self.screen, color, rect)
@@ -280,7 +299,7 @@ class Renderer:
             self.screen.blit(help_surface, (self.WINDOW_WIDTH // 2 - 100, help_y + i * 28))
 
         # 版本信息
-        version = self.font_small.render("v0.1.4", True, (80, 80, 100))
+        version = self.font_small.render("v0.1.5", True, (80, 80, 100))
         self.screen.blit(version, (10, self.WINDOW_HEIGHT - 30))
 
     def get_start_button_rect(self) -> pygame.Rect:

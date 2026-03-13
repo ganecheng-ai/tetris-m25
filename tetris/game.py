@@ -213,3 +213,13 @@ class TetrisGame:
         """获取下落速度 (毫秒)"""
         # 基础速度1000ms，每级减少50ms，最小100ms
         return max(100, 1000 - (self.level - 1) * 100)
+
+    def get_ghost_y(self) -> int:
+        """获取幽灵方块的y坐标（方块落下后的位置）"""
+        if self.current_piece is None:
+            return 0
+
+        ghost_y = self.current_piece.y
+        while not self._check_collision(self.current_piece, 0, ghost_y - self.current_piece.y + 1):
+            ghost_y += 1
+        return ghost_y
