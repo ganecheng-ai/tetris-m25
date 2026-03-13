@@ -162,19 +162,21 @@ class TetrisGame:
     def _clear_lines(self) -> None:
         """消除满行"""
         lines_cleared = 0
-        y = self.BOARD_HEIGHT - 1
-        while y >= 0:
-            if all(cell != 0 for cell in self.board[y]):
-                # 删除这一行
-                del self.board[y]
-                # 在顶部添加新行
-                self.board.insert(0, [0 for _ in range(self.BOARD_WIDTH)])
+        new_board = []
+        for row in self.board:
+            if all(cell != 0 for cell in row):
+                # 该行已满，消除它
                 lines_cleared += 1
-                logger.debug(f"消除一行: y={y}")
             else:
-                y -= 1
+                # 保留该行
+                new_board.append(row)
 
         if lines_cleared > 0:
+            # 在顶部添加空行
+            for _ in range(lines_cleared):
+                new_board.insert(0, [0 for _ in range(self.BOARD_WIDTH)])
+            self.board = new_board
+
             # 计算分数
             # 1行: 100, 2行: 300, 3行: 500, 4行: 800 * 等级
             line_scores = [0, 100, 300, 500, 800]
