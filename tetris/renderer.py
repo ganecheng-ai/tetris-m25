@@ -133,14 +133,15 @@ class Renderer:
 
         # 先绘制幽灵方块（如果提供）
         if ghost_y is not None and ghost_y != piece.y:
-            ghost_blocks = piece.get_blocks()
-            ghost_y_offset = ghost_y - piece.y
-            for bx, by in ghost_blocks:
-                if by >= 0:
-                    gx = board_x + bx * self.BLOCK_SIZE
-                    gy = board_y + (by + ghost_y_offset) * self.BLOCK_SIZE
-                    # 绘制半透明的幽灵方块
-                    self._draw_block(gx, gy, piece.color, alpha=60)
+            # 获取当前方块形状
+            shape = piece.get_current_shape()
+            for row in range(4):
+                for col in range(4):
+                    if shape[row][col]:
+                        gx = board_x + (piece.x + col) * self.BLOCK_SIZE
+                        gy = board_y + (ghost_y + row) * self.BLOCK_SIZE
+                        # 绘制半透明的幽灵方块
+                        self._draw_block(gx, gy, piece.color, alpha=60)
 
         blocks = piece.get_blocks()
         for bx, by in blocks:
