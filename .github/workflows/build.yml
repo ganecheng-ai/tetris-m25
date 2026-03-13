@@ -61,7 +61,7 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           pyinstaller --onefile --name tetris tetris/main.py
-          tar -czvf tetris-macos-x64.tar.gz dist/tetris.app
+          tar -czvf tetris-macos-x64.tar.gz dist/tetris
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
