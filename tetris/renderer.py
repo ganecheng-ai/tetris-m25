@@ -280,7 +280,7 @@ class Renderer:
             self.screen.blit(help_surface, (self.WINDOW_WIDTH // 2 - 100, help_y + i * 28))
 
         # 版本信息
-        version = self.font_small.render("v0.1.0", True, (80, 80, 100))
+        version = self.font_small.render("v0.1.4", True, (80, 80, 100))
         self.screen.blit(version, (10, self.WINDOW_HEIGHT - 30))
 
     def get_start_button_rect(self) -> pygame.Rect:

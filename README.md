@@ -75,3 +75,38 @@ tetris-m25/
 ## 版本
 
 当前版本: 0.1.4
+
+## 下载预编译版本
+
+前往 [GitHub Releases](https://github.com/ganecheng-ai/tetris-m25/releases) 页面下载适用于您操作系统的预编译版本：
+
+- **Windows**: 下载 `tetris-windows-x64.zip` 并解压运行
+- **Linux**: 下载 `tetris-linux-x64.tar.gz` 并解压运行
+- **macOS**: 下载 `tetris-macos-x64.tar.gz` 并解压运行
+
+## 分数计算规则
+
+| 消除行数 | 基础分数 |
+|----------|----------|
+| 1行      | 100      |
+| 2行      | 300      |
+| 3行      | 500      |
+| 4行      | 800      |
+
+最终得分 = 基础分数 × 等级
+
+## 等级系统
+
+- 初始等级: 1
+- 升级条件: 每消除10行升一级
+- 等级越高，下落速度越快
+
+## 日志文件
+
+游戏运行时会生成 `tetris.log` 日志文件，记录游戏过程中的重要事件，方便问题排查。
+
+## 技术栈
+
+- Python 3.8+
+- Pygame 2.0+
+- PyInstaller (用于打包)
